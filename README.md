@@ -9,4 +9,4 @@ A secure customer portal for international payments, built with React, Node.js/E
 4. Update `.env` with MongoDB URI.
 
 ## Video Demo
-[Link to YouTube video]
+https://youtu.be/A5QENa4mW5I
