@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+/*import React, { useState } from 'react';
 import axios from 'axios';
 
 const Register = () => {
@@ -76,3 +76,4 @@ const Register = () => {
 };
 
 export default Register;
+*/
