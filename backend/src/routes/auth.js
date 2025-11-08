@@ -1,7 +1,6 @@
 import express from 'express';
-// backend/src/routes/auth.js
 router.post('/login', async (req, res) => {
-  const { accountNumber, password, isEmployee } = req.body;  // ADD THIS LINE
+  const { accountNumber, password, isEmployee } = req.body;  
 
   if (!accountNumber || !password) {
     return res.status(400).json({ error: 'Missing credentials' });
