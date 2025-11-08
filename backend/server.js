@@ -1,31 +1,37 @@
+require('dotenv').config();
 const express = require('express');
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-const helmet = require('helmet');
 const cors = require('cors');
-const rateLimit = require('express-rate-limit');
-const winston = require('winston');
-const authRoutes = require('./routes/auth');
-const paymentsRoutes = require('./routes/payments');
+const helmet = require('helmet');
+const customerRoutes = require('./routes/customer');
+const employeeRoutes = require('./routes/employee');
+const { pool } = require('./src/db');  // Correct path
 
-dotenv.config();
 const app = express();
+const PORT = 5000;
 
-const logger = winston.createLogger({
-  transports: [new winston.transports.File({ filename: 'error.log', level: 'error' })]
+// Middleware
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+    },
+  },
+  frameguard: { action: 'deny' },
+}));
+app.use(cors({
+  origin: ['https://localhost:3000', 'https://localhost:3001', 'https://localhost:3002'],
+  credentials: true
+}));app.use(express.json());
+
+// Routes
+app.use('/api/customer', customerRoutes);
+app.use('/api/employee', employeeRoutes);
+
+// Test
+app.get('/api/test', (req, res) => res.json({ message: 'API Live!' }));
+
+app.listen(PORT, () => {
+  console.log(`API: https://localhost:${PORT}`);
 });
-
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => logger.error(err));
-
-app.use(helmet());
-app.use(cors({ origin: 'http://localhost:3000' }));
-app.use(express.json());
-app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
-
-app.use('/api/auth', authRoutes);
-app.use('/api/payments', paymentsRoutes);
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
