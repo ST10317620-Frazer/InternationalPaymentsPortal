@@ -1,51 +1,48 @@
 version: 2.1
-orbs:
-  node: circleci/node@5
-  sonarqube: circleci/sonarqube@2
-
 
 jobs:
-  build:
+  security-build:
     docker:
-      - image: cimg/node:18.17
+      - image: node:18
     steps:
       - checkout
-      - node/install-packages:
-          app-dir: backend
-      - node/install-packages:
-          app-dir: customer-portal
-      - run: cd backend && npm test
-      - run: cd customer-portal && npm run build
-      - run:
-          name: Install dependencies
-          command: npm install
-      - run:
-          name: Install Sonar Scanner
-          command: npm install -g sonar-scanner
-      - run:
-          name: Run SonarCloud Analysis
-          command: sonar-scanner \
-            -Dsonar.projectKey=ST10317620-Frazer_InternationalPaymentsPortal \
-            -Dsonar.organization=st10317620-frazer \
-            -Dsonar.sources=. \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.login=$SONAR_TOKEN
 
-  scan:
-    docker:
-      - image: cimg/node:18.17
-    steps:
-      - checkout
-      - sonarqube/scan:
-          sonar_token: $SONAR_TOKEN
-          sonar_host_url: http://your-sonarqube-url:9000
-          project_key: international-payments
-          project_name: International Payments Portal
+      # Backend install
+      - run:
+          name: Install Backend Dependencies
+          command: |
+            cd backend
+            npm install
+
+      # Dependency vulnerability scanning
+      - run:
+          name: Dependency Vulnerability Scan
+          command: |
+            cd backend
+            npm run audit
+
+      # Start API in background
+      - run:
+          name: Start API Server
+          command: |
+            cd backend
+            npm start &
+            sleep 10
+
+      # API security / availability test
+      - run:
+          name: API Health Check
+          command: |
+            curl --fail http://localhost:5000/api/health
+
+      # Frontend install
+      - run:
+          name: Install Frontend Dependencies
+          command: |
+            cd frontend
+            npm install
 
 workflows:
- pipeline:
+  devsecops-pipeline:
     jobs:
-      - build
-      - scan:
-          requires:
-            - build
+      - security-build

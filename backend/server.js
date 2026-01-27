@@ -30,7 +30,9 @@ app.use('/api/customer', customerRoutes);
 app.use('/api/employee', employeeRoutes);
 
 // Test
-app.get('/api/test', (req, res) => res.json({ message: 'API Live!' }));
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'UP' });
+});
 
 app.listen(PORT, () => {
   console.log(`API: https://localhost:${PORT}`);

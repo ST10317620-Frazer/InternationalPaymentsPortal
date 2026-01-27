@@ -5,9 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "server": "nodemon server.js",
-    "data:import": "node seeder.js",
-    "data:destroy": "node seeder.js -d",
+    "audit": "npm audit --audit-level=high",
     "dev": "nodemon server.js"
   },
   "dependencies": {
