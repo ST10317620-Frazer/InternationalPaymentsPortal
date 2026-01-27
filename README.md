@@ -36,6 +36,26 @@ passwords, ensuring that no plaintext credentials exist within the database.
 This approach ensures confidentiality, integrity, and resilience against
 common authentication-based attacks.
 
+## Role-Based Access Control (RBAC)
+
+The system implements Role-Based Access Control to ensure that users can only
+access functionality appropriate to their assigned role.
+
+### Defined Roles
+- **Customer**: Can register, authenticate, and submit payment requests.
+- **Employee**: Can view and verify pending transactions.
+- **Admin**: Reserved for future system management capabilities.
+
+### RBAC Enforcement
+Authentication is handled using JSON Web Tokens (JWTs). Each token includes
+the user’s role, which is verified on every protected request.
+
+Authorization middleware restricts access to routes based on role, preventing
+customers from accessing employee endpoints and ensuring least-privilege access.
+
+This approach reduces attack surface and prevents unauthorised privilege
+escalation.
+
 ## DevSecOps Pipeline
 
 This project implements a DevSecOps pipeline using CircleCI to ensure that
